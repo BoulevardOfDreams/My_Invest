@@ -1,0 +1,5 @@
+1.) How to catch a good exception?
+https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
+
+2.)Pandas Reader usage
+https://scientificallysound.org/2018/05/17/manipulating-data-with-pandas-part-2/
