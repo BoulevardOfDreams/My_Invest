@@ -85,43 +85,70 @@ def SMA_analysis(close_data, period):
 		return (signal, SMA)
 
 class MACD():
-	def __init__(self, close_data,\
+	def __init__(self, df,\
 				fastperiod  = 12, \
-				shortperiod = 26, \
+				slowperiod  = 26, \
 				signalperiod= 9      ):
 		
-		self.close_data		= close_data
+		self.close_data		= df['Close'].to_numpy()
 		self.fastperiod		= fastperiod
-		self.shortperiod	= shortperiod
+		self.slowperiod		= slowperiod
 		self.signalperiod	= signalperiod
 		
 		self.macd, self.signal, self.hist = talib.MACD(
 											self.close_data,\
 											self.fastperiod,\
-											self.shortperiod,\
+											self.slowperiod,\
 											self.signalperiod)
 		
 	def analyse(self):
 		log.INFO('MACD	   :Start Anaysis /n 	    \
 				  Parameter:/n						\
 				  fastperiod   = {self.fastperiod  }\
-				  shortperiod  = {self.shortperiod }\
+				  slowperiod   = {self.slowperiod  }\
 				  signalperiod = {self.signalperiod}'.format(self=self))
 				  
 		self.macd, self.signal, self.hist = talib.MACD(
 											self.close_data,\
 											self.fastperiod,\
-											self.shortperiod,\
+											self.slowperiod,\
 											self.signalperiod)
 		return (self.macd, self.signal, self.hist)
 		
-	
+	def plot(self):
+		np.set_printoptions(threshold=np.inf)
+		fig, axis = plt.subplots(2, sharex = True)
+		axis[0].plot(df['Date'][-365:], self.close_data[-365:], 'b-')
+		axis[1].plot(df['Date'][-365:], self.macd[-365:]	  , 'r-')
+		axis[1].plot(df['Date'][-365:], self.signal[-365:]	  , 'g-')
+		print(df[-165:].to_string())
+		plt.show()
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 if __name__ == "__main__":
 	
 	init_logger(log_level = log.INFO)
 	df = read_file('Econpile_data.csv')
 	Econpile_close = (df['Close'].to_numpy())
-	macd = MACD(Econpile_close)
+	print(df['Date'].to_numpy())
+	Econ_Macd = MACD(df)
+	Econ_Macd.plot()
 	# signal, SMA200 = SMA200_analysis(Econpile_close)
 	
 	# x_normal = np.arange(0, len(Econpile_close))
