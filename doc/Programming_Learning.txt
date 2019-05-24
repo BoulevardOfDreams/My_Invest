@@ -9,3 +9,16 @@ https://www.worldtradingdata.com/api/v1/history?symbol=5398.KLa&sort=oldest&outp
 
 4.)Python Log
 https://realpython.com/python-logging/
+
+5.) How to catch a good exception?
+https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
+
+6.)Pandas Reader usage
+https://scientificallysound.org/2018/05/17/manipulating-data-with-pandas-part-2/
+
+6.)Get Historical Data
+https://www.worldtradingdata.com/api/v1/history?symbol=5253.KL,5398.KL,9261.KL&date_from=2018-01-01&date_to=2018-12-31&sort=oldest&output=csv&api_token=bGzR4spkmYRSxL7L7iqwweLjK6zeUxMOwgDpGfKbuTvvqCMrdiRQeMcXVWf2
+
+7.)Alpha Vantage Api
+Api Key: DOO70B8F0AFLVBKL
+https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=5253.KL&apikey=DOO70B8F0AFLVBKL&outputsize=full&datatype=csv
