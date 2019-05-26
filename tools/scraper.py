@@ -10,7 +10,22 @@ from selenium import webdriver
 
 # Local application imports
 
-class data_processor():
+
+class stock_manager():
+	def __init__(self):
+		self.url_dict = \
+		{'econpile'	: 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data',\
+		 'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'			}	
+		
+	def list_all(self):
+		index = 1
+		for stock in self.url_dict.keys():
+			print ('Stock {0} : {1}.csv'.format(index, stock))
+			index+=1
+	
+		
+
+class csv_scraper():
     
     #directories
     current_dir       = os.getcwd()
@@ -25,13 +40,27 @@ class data_processor():
     csv_format        = 'text/csv' #MIME format  
     
     
-    def __init__(self):
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference(self.save_config      , self.custom_save )
-        profile.set_preference(self.download_dir     , self.database_dir)
-        profile.set_preference(self.save_without_ask , self.csv_format  )
-        profile.set_preference(self.show_dwload_start, False       )
+    def __init__(self, url_dict):
+        self.profile = webdriver.FirefoxProfile()
+        self.profile.set_preference(self.save_config      , self.custom_save )
+        self.profile.set_preference(self.download_dir     , self.database_dir)
+        self.profile.set_preference(self.save_without_ask , self.csv_format  )
+        self.profile.set_preference(self.show_dwload_start, False       	 )
+        self.browser = webdriver.Firefox(self.profile)
+        self.update_all_csv()
+		
+    def update_all_csv(self):
+        
+        download_xp = "//a[@title='Download Data']"
+        
+        for url in url_dict.values():
+            self.browser.get(url)
+            self.browser.find_element_by_xpath(download_xp).click()
         
 if __name__ == "__main__":
-    search_engine = data_processor()
+	stock = stock_manager()
+	stock.list_all()
+	scraper = csv_scraper(stock.url_dict)
+	
+    #search_engine = data_processor()
     
