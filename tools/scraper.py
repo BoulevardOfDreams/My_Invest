@@ -30,6 +30,7 @@ class csv_scraper():
     #directories
     current_dir       = os.getcwd()
     database_dir      = os.path.join(current_dir, '..', 'Database')
+    gecko_path        = os.path.join(current_dir, '..', 'tools\gecko\gecko.exe')
     
     #firefox configs
     save_config       = 'browser.download.folderList'
@@ -41,21 +42,23 @@ class csv_scraper():
     
     
     def __init__(self, url_dict):
-        self.profile = webdriver.FirefoxProfile()
+        self.url_dict = url_dict 
+        self.profile  = webdriver.FirefoxProfile()
         self.profile.set_preference(self.save_config      , self.custom_save )
         self.profile.set_preference(self.download_dir     , self.database_dir)
         self.profile.set_preference(self.save_without_ask , self.csv_format  )
         self.profile.set_preference(self.show_dwload_start, False       	 )
-        self.browser = webdriver.Firefox(self.profile)
+        self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
         self.update_all_csv()
 		
     def update_all_csv(self):
         
         download_xp = "//a[@title='Download Data']"
         
-        for url in url_dict.values():
+        for url in self.url_dict.values():
             self.browser.get(url)
-            self.browser.find_element_by_xpath(download_xp).click()
+            WebElement result = self.browser.find_element_by_xpath(download_xp)
+            print(result.getText())
         
 if __name__ == "__main__":
 	stock = stock_manager()
