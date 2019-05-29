@@ -58,7 +58,16 @@ class csv_scraper():
             self.profile.set_preference(proxy_port       , company_port)
         
         self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
-        self.update_all_csv()
+        self.login()
+        
+    def login(self):
+        
+        web_sign_in    = "//a[@class='login bold']"
+        pop_up_sign_in = "//a[@class='newButton orange']"
+        url            = "https://www.investing.com/"
+        
+        self.browser.get(url)
+        self.browser.find_element_by_xpath(web_sign_in).click()
         
     def update_all_csv(self):
         
@@ -66,8 +75,7 @@ class csv_scraper():
         
         for url in self.url_dict.values():
             self.browser.get(url)
-            #WebElement result = self.browser.find_element_by_xpath(download_xp)
-            #print(result.getText())
+            self.browser.find_element_by_xpath(download_xp).click()
         
 if __name__ == "__main__":
     stock = stock_manager()
