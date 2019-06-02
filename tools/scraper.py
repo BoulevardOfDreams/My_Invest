@@ -102,13 +102,11 @@ class csv_scraper():
             self.browser.get(url)
             self.browser.find_element_by_id("widgetFieldDateRange").click()
             
-            Date_txt = self.browser.find_element_by_id("startDate")
-            Date_txt.clear()
-            Date_txt.send_keys(startDate)
+            self.browser.find_element_by_id("startDate").clear()
+            self.browser.find_element_by_id("startDate").send_keys(startDate)
             
-            Date_txt = self.browser.find_element_by_id("endDate")
-            Date_txt.clear()
-            Date_txt.send_keys(endDate)
+            self.browser.find_element_by_id("endDate").clear()
+            self.browser.find_element_by_id("endDate").send_keys(endDate)
             
             self.browser.find_element_by_id("applyBtn").click()
             WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "curr_table")))
