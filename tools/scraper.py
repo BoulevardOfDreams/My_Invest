@@ -1,6 +1,7 @@
 # Standard library imports
 from os import getcwd, listdir, remove
 from os.path import join, isfile
+from datetime import datetime
 import logging as log
 
 # Third party imports
@@ -13,10 +14,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from time import sleep
 
 # Local application imports
-from environment.env_setting import ENVIRONMENT, Host 
+from environment.env_setting import ENVIRONMENT, Host
 
 class stock_manager():
     def __init__(self):
@@ -30,7 +30,7 @@ class stock_manager():
         for stock in self.url_dict.keys():
             print ('Stock {0} : {1}.csv'.format(index, stock))
             index+=1
-    
+        log.info('List all stock')
 
 class csv_scraper():
     
@@ -51,7 +51,7 @@ class csv_scraper():
     
     def __init__(self, url_dict):
     
-        self.url_dict    = url_dict
+        self.url_dict = url_dict
         self.profile  = 0
         self.browser  = 0
         
@@ -75,7 +75,13 @@ class csv_scraper():
             self.profile.set_preference(proxy_http       , company_http)
             self.profile.set_preference(proxy_port       , company_port)
         
-        self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
+        try:
+            self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
+            log.info('Webdriver init success')
+        except WebDriverException:
+            self.browser.close()
+            log.error('Webdriver: Path Error',exec_info = True)
+            
         
     def login(self):
      
@@ -85,33 +91,41 @@ class csv_scraper():
         webSignIn      = "//a[@class='login bold']"
         popUpSignIn    = "//a[starts-with(@onclick, 'login')]"
 
-
+        
         self.browser.get(url)
         self.browser.find_element_by_xpath(webSignIn).click()
         self.browser.find_element_by_id("loginFormUser_email").send_keys(email)
         self.browser.find_element_by_id("loginForm_password").send_keys(password)
         self.browser.find_element_by_xpath(popUpSignIn).click()
+        log.info('Login using {0}'.format(email))
         
     def update_all_csv(self):
         
-        download_xp = "//a[@title='Download Data']"
-        startDate   = "06/01/2013"
-        endDate     = "06/01/2019"
+        download_xp  = "//a[@title='Download Data']"
+        
+        dt           = datetime.now()
+        today        = dt.strftime("%m/%d/%Y")
+        x3_year_ago  = datetime(year  = dt.year - 3, 
+                                month = dt.month   , 
+                                day   = dt.day  - 1).strftime("%m/%d/%Y")
+        
         
         for url in self.url_dict.values():
             self.browser.get(url)
             self.browser.find_element_by_id("widgetFieldDateRange").click()
             
             self.browser.find_element_by_id("startDate").clear()
-            self.browser.find_element_by_id("startDate").send_keys(startDate)
+            self.browser.find_element_by_id("startDate").send_keys(x3_year_ago)
             
             self.browser.find_element_by_id("endDate").clear()
-            self.browser.find_element_by_id("endDate").send_keys(endDate)
+            self.browser.find_element_by_id("endDate").send_keys(today)
             
             self.browser.find_element_by_id("applyBtn").click()
             WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "curr_table")))
             self.browser.find_element_by_xpath(download_xp).click()
-            
+        
+        log.info('Updated all csv')
+        
     def delete_all_csv(self):
     
         all_csv = [csv for csv in listdir(self.database_dir)\
@@ -120,9 +134,11 @@ class csv_scraper():
         for csv in all_csv:
             remove(join(self.database_dir, csv))
         
-        
+        log.info('Deleted all csv')
         
 if __name__ == "__main__":
+    from analytic_lib import init_logger
+    init_logger(log_level = log.INFO)
     stock = stock_manager()
     stock.list_all()
     scraper = csv_scraper(stock.url_dict)
