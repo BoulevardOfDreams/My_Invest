@@ -55,6 +55,7 @@ class csv_scraper():
         self.profile  = 0
         self.browser  = 0
         
+        self.delete_all_csv()
         self.setup_firefox()
         self.login()
         self.update_all_csv()
@@ -68,12 +69,19 @@ class csv_scraper():
         self.profile.set_preference(self.show_dwload_start, False            )
         
         if ENVIRONMENT == Host.COMPANY:
-            company_http  = 'uia64930:Pass:D@cias3basic.conti.de' #Conti proxy
-            company_port  = '8080'
-            proxy_http    = 'network.proxy.http'    
-            proxy_port    = 'network.proxy.http_port' 
+            username       = 'uia64930'
+            password       = 'Outmyhouse95:D'  
+            company_http   = 'cias3basic.conti.de' #Conti proxy
+            company_port   = '8080'
+            proxy_http     = 'network.proxy.http'    
+            proxy_port     = 'network.proxy.http_port'
+            socks_username = 'network.proxy.socks_username'
+            socks_password = 'network.proxy.socks_password'
             self.profile.set_preference(proxy_http       , company_http)
             self.profile.set_preference(proxy_port       , company_port)
+            self.profile.set_preference(socks_username   , username    )
+            self.profile.set_preference(socks_password   , password    )
+            print('hit')
         
         try:
             self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
