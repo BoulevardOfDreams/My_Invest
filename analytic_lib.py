@@ -4,126 +4,129 @@ import logging as log
 
 # Third party imports
 import talib
-import numpy as np
-import pandas as pd
+import numpy             as np
+import pandas            as pd
 import matplotlib.pyplot as plt
 from pandas import ExcelWriter
 from pandas import ExcelFile
-from talib import MA_Type
+from talib  import MA_Type
 
 # Local application imports
-from tools.reader import read_file
+from tools.reader        import read_file
 from tools.functionality import np_shift
+from tools.scraper       import csv_scraper, stock_manager
 
 class context():
-	def __init__(self):
-		self.MA200 = 200
-		self.MA100 = 100
-		self.MA50  = 50
+    def __init__(self):
+        self.MA200 = 200
+        self.MA100 = 100
+        self.MA50  = 50
 
 def init_logger(log_level):
 
-	log.basicConfig(level = log_level,
-					filename='app.log',
-					filemode='w', 
-					format='[%(levelname)s] - %(threadName)s - %(message)s')
-	log.info('Logging Start')
-	
+    log.basicConfig(level    = log_level, \
+                    filename = 'app.log', \
+                    filemode = 'w'      , \
+                    format   = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 	
 
 def RSI__IsOverbought(rsi_value, upper_limit):
-	'''
-	parameter: rsi_value = value from talib.RSI
-	return	 : range of days where overbought happens. (True = 'Overbought')
-	'''
-	dummy_val = 50
-	return np_shift((rsi_value>=upper_limit),1,0)& \
-		  (np_shift(rsi_value,1,dummy_val)>rsi_value)
+    '''
+    parameter: rsi_value = value from talib.RSI
+    return	 : range of days where overbought happens. (True = 'Overbought')
+    '''
+    dummy_val = 50
+    return np_shift((rsi_value>=upper_limit),1,0)& \
+          (np_shift(rsi_value,1,dummy_val)>rsi_value)
 		  
 def RSI__IsOversold(rsi_value, lower_limit):
-	'''
-	parameter: rsi_value = value from talib.RSI
-	return	 : range of days where oversold happens. (True = 'Oversold')
-	'''
-	dummy_val = 50
-	return np_shift((rsi_value<=lower_limit),1,0)& \
-		   (np_shift(rsi_value,1,dummy_val)<rsi_value)
+    '''
+    parameter: rsi_value = value from talib.RSI
+    return	 : range of days where oversold happens. (True = 'Oversold')
+    '''
+    dummy_val = 50
+    return np_shift((rsi_value<=lower_limit),1,0)& \
+           (np_shift(rsi_value,1,dummy_val)<rsi_value)
 
 def RSI_analysis(close_data, timeperiod, upper_limit = 70, lower_limit = 30):
-	'''
-	parameter: close_data = closing price array (type: np.ndarray.float64)
-	return	 : rsi_buy_signal  = range of days to 'Buy'. True = 'Buy'
-			   rsi_sell_signal = range of days to 'Sell'. True ='Sell'	
-	'''
-	dummy_value 	= 50
-	rsi_value		= talib.RSI(close_data, timeperiod).astype(np.float32)
-	rsi_value 		= rsi_value[~np.isnan(rsi_value)] #only select non-nan RSI value			  
-	rsi_buy_signal  = RSI__IsOversold(rsi_value, lower_limit)
-	rsi_sell_signal	= RSI__IsOverbought(rsi_value,upper_limit)
-	return (rsi_value,rsi_buy_signal,rsi_sell_signal)
+    '''
+    parameter: close_data = closing price array (type: np.ndarray.float64)
+    return	 : rsi_buy_signal  = range of days to 'Buy'. True = 'Buy'
+               rsi_sell_signal = range of days to 'Sell'. True ='Sell'	
+    '''
+    dummy_value 	= 50
+    rsi_value		= talib.RSI(close_data, timeperiod).astype(np.float32)
+    rsi_value 		= rsi_value[~np.isnan(rsi_value)] #only select non-nan RSI value			  
+    rsi_buy_signal  = RSI__IsOversold(rsi_value, lower_limit)
+    rsi_sell_signal	= RSI__IsOverbought(rsi_value,upper_limit)
+    return (rsi_value,rsi_buy_signal,rsi_sell_signal)
 	
 def SMA_analysis(close_data, period):
-	'''
-	parameter: close_data = closing price array (type: np.ndarray.float64)
-	return	 : 1. signal
-			      - within period  = False(Invalid)
-			      - greater period = return True(above SMA) and False(below SMA)
-			   2. SMA
-				  - moving average result
-	'''
-	data_len 		= len(close_data)
-	SMA				= np.zeros(data_len)
-	signal 			= np.zeros(data_len, dtype = bool)
-	
-	if data_len > period:
-		SMA  			= talib.SMA(close_data, period).astype(np.float32)
-		signal[period:] = close_data[period:] > SMA[period:]
-		log.info('SMA: Complete')
-		return (signal, SMA)
-	else:
-		log.error('SMA: Data length < 200 ')
-		return (signal, SMA)
+    '''
+    parameter: close_data = closing price array (type: np.ndarray.float64)
+    return	 : 1. signal
+                  - within period  = False(Invalid)
+                  - greater period = return True(above SMA) and False(below SMA)
+               2. SMA
+                  - moving average result
+    '''
+    data_len 		= len(close_data)
+    SMA				= np.zeros(data_len)
+    signal 			= np.zeros(data_len, dtype = bool)
+
+    if data_len > period:
+        SMA  			= talib.SMA(close_data, period).astype(np.float32)
+        signal[period:] = close_data[period:] > SMA[period:]
+        log.info('SMA: Complete')
+        return (signal, SMA)
+    else:
+        log.error('SMA: Data length < 200 ')
+        return (signal, SMA)
 
 class MACD():
-	def __init__(self, df,\
-				fastperiod  = 12, \
-				slowperiod  = 26, \
-				signalperiod= 9      ):
-		
-		self.close_data		= df['Close'].to_numpy()
-		self.fastperiod		= fastperiod
-		self.slowperiod		= slowperiod
-		self.signalperiod	= signalperiod
-		
-		self.macd, self.signal, self.hist = talib.MACD(
-											self.close_data,\
-											self.fastperiod,\
-											self.slowperiod,\
-											self.signalperiod)
-		
-	def analyse(self):
-		log.INFO('MACD	   :Start Anaysis /n 	    \
-				  Parameter:/n						\
-				  fastperiod   = {self.fastperiod  }\
-				  slowperiod   = {self.slowperiod  }\
-				  signalperiod = {self.signalperiod}'.format(self=self))
-				  
-		self.macd, self.signal, self.hist = talib.MACD(
-											self.close_data,\
-											self.fastperiod,\
-											self.slowperiod,\
-											self.signalperiod)
-		return (self.macd, self.signal, self.hist)
-		
-	def plot(self):
-		np.set_printoptions(threshold=np.inf)
-		fig, axis = plt.subplots(2, sharex = True)
-		axis[0].plot(df['Date'][-365:], self.close_data[-365:], 'b-')
-		axis[1].plot(df['Date'][-365:], self.macd[-365:]	  , 'r-')
-		axis[1].plot(df['Date'][-365:], self.signal[-365:]	  , 'g-')
-		print(df[-165:].to_string())
-		plt.show()
-		
+    
+    def __init__(self, df_close , \
+                fastperiod  = 12, \
+                slowperiod  = 26, \
+                signalperiod= 9   ):
+        
+        self.log            = log.getLogger('{:<15}'.format('macd'))
+        self.fastperiod		= fastperiod
+        self.slowperiod		= slowperiod
+        self.signalperiod	= signalperiod
+        self.close_data       = df_close.to_numpy()
+        self.macd, self.signal, self.hist = self.analyse(df_close)
+        
+        
+        
+    def analyse(self, close):
+        
+        
+        self.log.info('MACD	   :Start Analysis               \n\
+                          Parameter:                         \n\
+                          fastperiod   = {self.fastperiod}   \n\
+                          slowperiod   = {self.slowperiod}   \n\
+                          signalperiod = {self.signalperiod} \n'.format(self=self))
+        
+        close_data		                  = close.to_numpy()
+        self.macd, self.signal, self.hist = talib.MACD(
+                                            close_data     ,\
+                                            self.fastperiod,\
+                                            self.slowperiod,\
+                                            self.signalperiod)
+        return (self.macd, self.signal, self.hist)
+        
+    def plot(self):
+                
+        fig, axis = plt.subplots(2, sharex = True)
+        np.set_printoptions(threshold=np.inf)
+        axis[0].plot(df['Date'], self.close_data , 'b-')
+        axis[1].plot(df['Date'], self.macd       , 'r-')
+        axis[1].plot(df['Date'], self.signal     , 'g-')
+        axis[1].plot(df['Date'], self.hist       , 'k-')
+        plt.show()
+        
 		
 		
 		
@@ -143,12 +146,23 @@ class MACD():
 		
 if __name__ == "__main__":
 	
-	init_logger(log_level = log.INFO)
-	df = read_file('Econpile_data.csv')
-	Econpile_close = (df['Close'].to_numpy())
-	print(df['Date'].to_numpy())
-	Econ_Macd = MACD(df)
-	Econ_Macd.plot()
+    # init_logger(log_level = log.INFO)
+    
+    # stock = stock_manager()
+    # stock.list_all()
+    # scraper = csv_scraper(stock.url_dict)
+    
+    from os import getcwd, listdir
+    from os.path import join, isfile
+    database_dir  = os.path.join(os.getcwd(), 'Database')
+    csv_list      = [csv for csv in listdir(database_dir)\
+                    if isfile(join(database_dir, csv))]
+    econpile_data = csv_list[1]
+    
+    df = read_file(econpile_data)
+
+    Econ_Macd = MACD(df['Price'])
+    Econ_Macd.plot()
 	# signal, SMA200 = SMA200_analysis(Econpile_close)
 	
 	# x_normal = np.arange(0, len(Econpile_close))

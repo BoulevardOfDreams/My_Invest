@@ -9,4 +9,4 @@ class Host(Enum):
     HOME    = 1
     COMPANY = 2
 
-ENVIRONMENT = Host.COMPANY
+ENVIRONMENT = Host.HOME

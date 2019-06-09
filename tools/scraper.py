@@ -22,22 +22,24 @@ class stock_manager():
     def __init__(self):
         self.url_dict = \
         {'econpile' : 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data',\
-         'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'           }   
-        log.info('Initialize Stock Library')
+         'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'           } 
+        
+        self.log      = log.getLogger('{:<15}'.format('stock_manager'))
+        self.log.info('Initialize Stock Library')
         
     def list_all(self):
         index = 1
         for stock in self.url_dict.keys():
             print ('Stock {0} : {1}.csv'.format(index, stock))
             index+=1
-        log.info('List all stock')
+        self.log.info('List all stock')
 
 class csv_scraper():
     
     #directories
     current_dir       = getcwd()
-    database_dir      = join(current_dir, '..', 'Database')
-    gecko_path        = join(current_dir, '..', 'tools\gecko\gecko.exe')
+    database_dir      = join(current_dir, 'Database')
+    gecko_path        = join(current_dir, 'tools\gecko\gecko.exe')
     
     #firefox configs
     save_config       = 'browser.download.folderList'
@@ -51,9 +53,10 @@ class csv_scraper():
     
     def __init__(self, url_dict):
     
-        self.url_dict = url_dict
-        self.profile  = 0
-        self.browser  = 0
+        self.url_dict     = url_dict
+        self.profile      = 0
+        self.browser      = 0
+        self.log          = log.getLogger('{:<15}'.format('scraper'))
         
         self.delete_all_csv()
         self.setup_firefox()
@@ -81,14 +84,13 @@ class csv_scraper():
             self.profile.set_preference(proxy_port       , company_port)
             self.profile.set_preference(socks_username   , username    )
             self.profile.set_preference(socks_password   , password    )
-            print('hit')
         
         try:
             self.browser = webdriver.Firefox(self.profile, executable_path = self.gecko_path)
-            log.info('Webdriver init success')
+            self.log.info('Webdriver init success')
         except WebDriverException:
             self.browser.close()
-            log.error('Webdriver: Path Error',exec_info = True)
+            self.log.error('Webdriver: Path Error',exec_info = True)
             
         
     def login(self):
@@ -105,7 +107,7 @@ class csv_scraper():
         self.browser.find_element_by_id("loginFormUser_email").send_keys(email)
         self.browser.find_element_by_id("loginForm_password").send_keys(password)
         self.browser.find_element_by_xpath(popUpSignIn).click()
-        log.info('Login using {0}'.format(email))
+        self.log.info('Login using {0}'.format(email))
         
     def update_all_csv(self):
         
@@ -132,7 +134,7 @@ class csv_scraper():
             WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "curr_table")))
             self.browser.find_element_by_xpath(download_xp).click()
         
-        log.info('Updated all csv')
+        self.log.info('Updated all csv')
         
     def delete_all_csv(self):
     
@@ -142,7 +144,7 @@ class csv_scraper():
         for csv in all_csv:
             remove(join(self.database_dir, csv))
         
-        log.info('Deleted all csv')
+        self.log.info('Deleted all csv')
         
 if __name__ == "__main__":
     from analytic_lib import init_logger
