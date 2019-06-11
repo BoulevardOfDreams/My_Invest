@@ -132,12 +132,21 @@ class MACD():
         
     def plot(self):
 	
-        np.set_printoptions(threshold=np.inf)
         fig, axis = plt.subplots(2, sharex = True)
-        axis[0].plot(self.close_data , 'b-')
-        axis[1].plot(self.macd       , 'r-')
-        axis[1].plot(self.signal     , 'g-')
-        axis[1].plot(self.hist       , 'k-')
+        axis[0].set_title('Stock'              )
+        axis[0].set(xlabel = 'Days'            )
+        axis[0].set(ylabel = 'Price'           )
+        axis[0].plot(self.close_data ,     'b-')
+        axis[1].set_title('Macd ({0},{1},{2})'.format(self.fastperiod,\
+                                                      self.slowperiod,\
+                                                      self.signalperiod))
+        axis[1].set(xlabel = 'Days'            )
+        axis[1].set(ylabel = 'Index'           )
+        axis[1].plot(self.macd       ,     'r-')
+        axis[1].plot(self.signal     ,     'g-')
+        axis[1].bar(range(0,   len(self.hist)),\
+                    height = self.hist        ,\
+                    color  = 'green' )
         plt.show()
         
 		
@@ -170,7 +179,7 @@ if __name__ == "__main__":
     database_dir  = os.path.join(os.getcwd(), 'Database')
     csv_list      = [csv for csv in listdir(database_dir)\
                     if isfile(join(database_dir, csv))]
-    econpile_data = csv_list[1]
+    econpile_data = csv_list[0]
     
     df = read_file(econpile_data)
 
