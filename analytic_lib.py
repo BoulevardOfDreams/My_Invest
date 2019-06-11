@@ -4,17 +4,17 @@ import logging as log
 
 # Third party imports
 import talib
-import numpy             as np
-import pandas            as pd
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from pandas import ExcelWriter
 from pandas import ExcelFile
-from talib  import MA_Type
+from talib import MA_Type
 
 # Local application imports
-from tools.reader        import read_file
+from tools.reader import read_file
 from tools.functionality import np_shift
-from tools.scraper       import csv_scraper, stock_manager
+from tools.scraper import csv_scraper, stock_manager
 
 class context():
     def __init__(self):
@@ -24,9 +24,9 @@ class context():
 
 def init_logger(log_level):
 
-    log.basicConfig(level    = log_level, \
-                    filename = 'app.log', \
-                    filemode = 'w'      , \
+    log.basicConfig(level    = log_level    , \
+                    filename = 'logfile.log', \
+                    filemode = 'w'          , \
                     format   = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 	
@@ -85,24 +85,36 @@ def SMA_analysis(close_data, period):
         return (signal, SMA)
 
 class MACD():
-    
+
+    '''
+    parameter: class init
+	           df_close        = closing price                    [df  : required]
+               fastperiod      = fast EMA period   , < slowperiod [int : optional]
+			   slowperiod      = slow EMA period   , > fastperiod [int : optional]
+			   signalperiod    = signal EMA period , < fastperiod [int : optional]                  	  	
+    '''
+	
     def __init__(self, df_close , \
                 fastperiod  = 12, \
                 slowperiod  = 26, \
                 signalperiod= 9   ):
         
         self.log            = log.getLogger('{:<15}'.format('macd'))
+        self.close_data     = df_close.to_numpy()
         self.fastperiod		= fastperiod
         self.slowperiod		= slowperiod
         self.signalperiod	= signalperiod
-        self.close_data       = df_close.to_numpy()
         self.macd, self.signal, self.hist = self.analyse(df_close)
         
         
         
     def analyse(self, close):
-        
-        
+        '''
+        parameter: close  = closing price (type: dataframe)         
+        return   : macd   = macd          (type: np.ndarray.float64)							  
+                   signal = signal        (type: np.ndarray.float64)
+			       hist	  = macd - signal (type: np.ndarray.float64)
+        '''
         self.log.info('MACD	   :Start Analysis               \n\
                           Parameter:                         \n\
                           fastperiod   = {self.fastperiod}   \n\
@@ -118,13 +130,9 @@ class MACD():
         return (self.macd, self.signal, self.hist)
         
     def plot(self):
-                
-        fig, axis = plt.subplots(2, sharex = True)
+	
         np.set_printoptions(threshold=np.inf)
-        axis[0].plot(df['Date'], self.close_data , 'b-')
-        axis[1].plot(df['Date'], self.macd       , 'r-')
-        axis[1].plot(df['Date'], self.signal     , 'g-')
-        axis[1].plot(df['Date'], self.hist       , 'k-')
+        fig, axis = plt.subplots(2, sharex = True)
         plt.show()
         
 		
