@@ -100,10 +100,11 @@ class MACD():
                 signalperiod= 9   ):
         
         self.log            = log.getLogger('{:<15}'.format('macd'))
-        self.close_data     = df_close.to_numpy()
+        self.close_data     = df_close.to_numpy()[::-1]
         self.fastperiod		= fastperiod
         self.slowperiod		= slowperiod
         self.signalperiod	= signalperiod
+
         self.macd, self.signal, self.hist = self.analyse(df_close)
         
         
@@ -123,9 +124,9 @@ class MACD():
         
         close_data		                  = close.to_numpy()
         self.macd, self.signal, self.hist = talib.MACD(
-                                            close_data     ,\
-                                            self.fastperiod,\
-                                            self.slowperiod,\
+                                            close_data[::-1],\
+                                            self.fastperiod ,\
+                                            self.slowperiod ,\
                                             self.signalperiod)
         return (self.macd, self.signal, self.hist)
         
@@ -133,6 +134,10 @@ class MACD():
 	
         np.set_printoptions(threshold=np.inf)
         fig, axis = plt.subplots(2, sharex = True)
+        axis[0].plot(self.close_data , 'b-')
+        axis[1].plot(self.macd       , 'r-')
+        axis[1].plot(self.signal     , 'g-')
+        axis[1].plot(self.hist       , 'k-')
         plt.show()
         
 		
