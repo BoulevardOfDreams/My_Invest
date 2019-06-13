@@ -130,9 +130,8 @@ class MACD():
                                             self.signalperiod)
         return (self.macd, self.signal, self.hist)
         
-    def plot(self):
+    def plot(self, axis):
 	
-        fig, axis = plt.subplots(2, sharex = True)
         axis[0].set_title('Stock'              )
         axis[0].set(xlabel = 'Days'            )
         axis[0].set(ylabel = 'Price'           )
@@ -148,9 +147,29 @@ class MACD():
                     height = self.hist        ,\
                     color  = 'green' )
         plt.show()
+        self.log.info('plot successful')
         
 		
-		
+	def buy_on_up_momentum(self, mode = 'simulation'):
+       
+       hist_len = len(self.hist)
+       base_len = 0.002
+       thres    = 0
+       
+       if mode == 'simulation':
+            result   = np.zeros(hist_len)
+            for i in range(2, hist_len):
+                gradient  = (self.hist[i]-self.hist[i-2])/base_len
+                result[i] = gradient > thres
+             
+            return result
+        else mode == 'actual':
+            gradient  = (self.hist[i]-self.hist[i-2])/base_len
+            return gradient > thres
+        else:
+            self.log.exception('No handle for mode : {0}'.format(mode))
+            raise Exception()
+        
 		
 		
 		
@@ -180,11 +199,12 @@ if __name__ == "__main__":
     csv_list      = [csv for csv in listdir(database_dir)\
                     if isfile(join(database_dir, csv))]
     econpile_data = csv_list[0]
+    fig, axis = plt.subplots(2, sharex = True)
     
     df = read_file(econpile_data)
 
     Econ_Macd = MACD(df['Price'])
-    Econ_Macd.plot()
+    Econ_Macd.plot(axis)
 	# signal, SMA200 = SMA200_analysis(Econpile_close)
 	
 	# x_normal = np.arange(0, len(Econpile_close))
