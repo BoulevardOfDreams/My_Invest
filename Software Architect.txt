@@ -1,0 +1,24 @@
+Software Architect
+
+MACD
+
+Buy Strategy (return array of 1's and 0's)
+1.) Positive gradient buy - strict    : only buy + hist
+                            non-strict: buy any points
+2.) Positive hist buy     - buy any points
+
+Sell Strategy (return array of 1's and 0's)
+1.) Negative hist sell    - sell any points
+
+Result Simulator Class
+1.) noise_filter          - filter exact buy sell points
+2.) money_vault           -
+3.) min_transaction       -
+4.) units_bought          -
+
+refer to github transaction modules
+
+
+
+Buy Strategy (return array of 1's and 0's)
+1.) 
