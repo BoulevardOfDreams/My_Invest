@@ -29,3 +29,7 @@ https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=5253.KL&apik
 
 8.)Geckodriver, selenium, firefox compatiblity
 https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html
+
+9.)Create .py file in cmd
+TYPE CON>test.py
+ctrl + z to terminate
