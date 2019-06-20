@@ -40,13 +40,20 @@ def main():
     print(Macd.hist[1] > Macd.hist[0], Macd.hist[1] > 0)
     result    = Macd.test_buy_momentum(True)
     close     = df['Price'].to_numpy()[::-1]
-    buy_pts_X = np.arange(len(close))[result]
-    buy_pts_Y = close[result]
-    axis[0].plot(buy_pts_X, buy_pts_Y, 'k.')
     
-    #normal_x  = np.arange(len(close))
+    # MACD testing
+    # buy_pts_X = np.arange(len(close))[result]
+    # buy_pts_Y = close[result]
+    # axis[0].plot(buy_pts_X, buy_pts_Y, 'k.')
+    
+    # normal_x  = np.arange(len(close))
     Sma  = SMA(df['Price'], 50)
-    axis[0].plot(Sma.result, 'g-')
+    axis[0].plot(Sma.sma, 'g-')
+    result = Sma.test_buy_abv_sma()
+    buy_pts_y = close[result]
+    buy_pts_x = np.arange(len(close))[result]
+    axis[0].plot(buy_pts_x, buy_pts_y, 'k.')
+    # 
     Macd.plot(axis)
     # signal, SMA200 = SMA200_analysis(Econpile_close)
     
