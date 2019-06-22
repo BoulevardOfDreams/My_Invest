@@ -28,6 +28,7 @@ Include/
 LICENSE.txt
 Scripts/
 tcl/
+environment/
 
 *.egg
 MANIFEST
