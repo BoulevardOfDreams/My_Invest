@@ -85,26 +85,7 @@ class MACD():
                                             self.fastperiod ,\
                                             self.slowperiod ,\
                                             self.signalperiod)
-        return (self.macd, self.signal, self.hist)
-        
-    def plot(self, axis):
-	
-        axis[0].set_title('Stock'              )
-        axis[0].set(xlabel = 'Days'            )
-        axis[0].set(ylabel = 'Price'           )
-        axis[0].plot(self.close_data ,     'b-')
-        axis[1].set_title('Macd ({0},{1},{2})'.format(self.fastperiod,\
-                                                      self.slowperiod,\
-                                                      self.signalperiod))
-        axis[1].set(xlabel = 'Days'            )
-        axis[1].set(ylabel = 'Index'           )
-        axis[1].plot(self.macd       ,     'r-')
-        axis[1].plot(self.signal     ,     'g-')
-        axis[1].bar(range(0,   len(self.hist)),\
-                    height = self.hist        ,\
-                    color  = 'green' )
-        plt.show()
-        self.log.info('plot successful')        
+        return (self.macd, self.signal, self.hist)    
 
     def test_buy_momentum(self, strict_mode = False):
     
