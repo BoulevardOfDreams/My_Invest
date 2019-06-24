@@ -1,5 +1,8 @@
 # Standard library imports
+import os
 import logging as log
+from os import listdir
+from os.path import join
 
 # Third party imports
 import numpy as np
@@ -18,18 +21,18 @@ def np_shift(arr, num, fill_value=np.nan):
     return result
     
     
-def plot_all(axis       ,\
-             close_data ,\
-             macd       ,\
-             signal     ,\
-             hist       ,\
-             sma        ,\
-             x          ,\
-             y          ):
+def setup_plot(axis       ,\
+               close_data ,\
+               macd       ,\
+               signal     ,\
+               hist       ,\
+               sma        ,\
+               x          ,\
+               y          ):
     '''
         plot all graph and save (modifiable)
     '''
-    logger            = log.getLogger('{:<15}'.format('plot all'))
+    logger            = log.getLogger('{:<15}'.format('plot setup'))
     
     #sma
     axis[0].set_title('Stock'              )
@@ -51,7 +54,9 @@ def plot_all(axis       ,\
     #TEST ONLY
     axis[0].plot(x, y,                 'k.')
     
+    log.info('setup successful')
     
-    log.info('plot and save successful')
-    plt.show()
+def save(name, fig, format = '.pdf'):
+    fig_path = join('.\\result\\figure', name + format)
+    fig.savefig(fig_path)
     
