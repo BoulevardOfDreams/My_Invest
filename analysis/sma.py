@@ -28,7 +28,18 @@ class SMA():
     def test_buy_abv_sma(self, strict_mode = False):
     
         self.log.info('test buy abv sma, strict = {}', strict_mode)
-        abv_sma = np.where(self.close>self.sma, 1, 0).astype(bool)
+        
+        #TEST ONLY
+        a       = np.zeros(len(self.close))
+        a[150] = self.close[150]
+        b       = np.zeros(len(self.sma))
+        b[150] = self.sma[150]
+        
+        abv_sma = np.where(a>b, 1, 0).astype(bool)
+        
+        #debug only
+        log.debug(self.close[:150])
+        log.debug(self.sma[:150])
         
         if strict_mode:
             abv_2_days = np_shift(abv_sma,   \

@@ -23,7 +23,7 @@ class context():
         
     
 def main():
-    init_logger(log_level = log.INFO)
+    init_logger(log_level = log.DEBUG)
     
     # stock = stock_manager()
     # stock.list_all()
@@ -31,13 +31,13 @@ def main():
     
     from os import getcwd, listdir, remove
     from os.path import join, isfile
-    import shutil
     
     database_dir  = os.path.join(os.getcwd(), 'Database')
     fig_dir       = os.path.join(os.getcwd(), 'result\\figure')
     csv_list      = [csv for csv in listdir(database_dir)\
                     if isfile(join(database_dir, csv))]
     
+    #remove fig
     for filename in listdir(fig_dir):
             pdf = os.path.join(fig_dir, filename)
             remove(pdf)

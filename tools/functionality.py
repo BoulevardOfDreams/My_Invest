@@ -1,7 +1,5 @@
 # Standard library imports
-import os
 import logging as log
-from os import listdir
 from os.path import join
 
 # Third party imports
@@ -32,31 +30,35 @@ def setup_plot(axis       ,\
     '''
         plot all graph and save (modifiable)
     '''
-    logger            = log.getLogger('{:<15}'.format('plot setup'))
+    logger            = log.getLogger('{:<15}'.format('plot'))
     
     #sma
-    axis[0].set_title('Stock'              )
-    axis[0].set(xlabel = 'Days'            )
-    axis[0].set(ylabel = 'Price'           )
-    axis[0].plot(close_data      ,     'b-')
-    axis[0].plot(sma             ,     'g-') #sma
+    axis[0].set_title(       'Stock')
+    axis[0].set(xlabel     =  'Days')
+    axis[0].set(ylabel     = 'Price')
+    axis[0].plot(close_data,    'b-')
+    axis[0].plot(sma       ,    'g-') #sma
     
     #macd, hist
     axis[1].set_title('Macd ({0},{1},{2})'.format(12,26,9))
-    axis[1].set(xlabel = 'Days'            )
-    axis[1].set(ylabel = 'Index'           )
-    axis[1].plot(macd            ,     'r-')
-    axis[1].plot(signal          ,     'g-')
-    axis[1].bar(range(0,   len(hist))     ,\
-                height = hist             ,\
-                color  = 'green'           )
+    axis[1].set(xlabel     =  'Days')
+    axis[1].set(ylabel     = 'Index')
+    axis[1].plot(macd      ,    'r-')
+    axis[1].plot(signal    ,    'g-')
+    axis[1].bar(range(0,   len(hist)),\
+                height     =  hist   ,\
+                color      = 'green')
                 
     #TEST ONLY
-    axis[0].plot(x, y,                 'k.')
+    axis[0].plot(x, y, 'k.')
     
-    log.info('setup successful')
+    logger.info('setup')
     
 def save(name, fig, format = '.pdf'):
+
+    logger = log.getLogger('{:<15}'.format('save'))
+    
     fig_path = join('.\\result\\figure', name + format)
     fig.savefig(fig_path)
     
+    logger.info('{} saved'.format(name))
