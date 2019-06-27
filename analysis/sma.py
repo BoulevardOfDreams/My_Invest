@@ -21,25 +21,15 @@ class SMA():
     def analysis(self, df_close):
         self.log.info('SMA, Period = {0}'.format(self.period))
         
-        close        = df_close.to_numpy()[::-1]
-        self.sma  = talib.SMA(close, self.period).astype(np.float32)
-    
+        close                  = df_close.to_numpy()[::-1]
+        self.sma               = talib.SMA(close, self.period).astype(np.float32)
+        self.sma[:self.period] = self.close[:self.period]
     
     def test_buy_abv_sma(self, strict_mode = False):
     
-        self.log.info('test buy abv sma, strict = {}', strict_mode)
+        self.log.info('test buy abv sma, strict = {}'.format(strict_mode))
         
-        #TEST ONLY
-        a       = np.zeros(len(self.close))
-        a[150] = self.close[150]
-        b       = np.zeros(len(self.sma))
-        b[150] = self.sma[150]
-        
-        abv_sma = np.where(a>b, 1, 0).astype(bool)
-        
-        #debug only
-        log.debug(self.close[:150])
-        log.debug(self.sma[:150])
+        abv_sma = np.where(self.close>self.sma, 1, 0).astype(bool)
         
         if strict_mode:
             abv_2_days = np_shift(abv_sma,   \
@@ -51,7 +41,7 @@ class SMA():
     
     def buy_abv_sma(self, strict_mode = False):
     
-        self.log.info('test buy abv sma, strict = {}', strict_mode)
+        self.log.info('test buy abv sma, strict = {}'.format(strict_mode))
         abv_sma = self.close[-1] > self.sma[-1]
         
         if strict_mode:
