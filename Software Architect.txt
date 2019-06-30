@@ -25,23 +25,27 @@ Result Simulator Class
      sell price         =
      
      gross_earn_pct     = (sell-buy)/buy x 100%
-     stamp_duty         = 0.09% (basis of RM3500)
+     
+     buy_stamp_duty     = INT(b_price)/(1000*b_price)
      
      buy_broker_cost    = 100%(buy_pct) x 0.42%
      buy_svc_tax        = buy_broker_cost  x 6%
      clear_fee          = buy_pct x 0.03%
-     buy_cost           = 100% + buy_broker_cost + buy_svc_tax + stamp_duty + clear_fee
+     buy_cost           = 100% + buy_broker_cost + buy_svc_tax + buy_stamp_duty + clear_fee
+
+     sell_stamp_duty	= INT(s_price)/(1000*s_price)
      
      sell_pct           = buy_pct + gross_earn_pct
      sell_broker_cost   = (sell_pct) x 0.42%
      sell_svc_tax       = sell_broker_cost x 6%
      clear_fee          = sell_pct x 0.03%
-     sell_profit        = (sell_pct) - sell_broker_cost - sell_svc_tax - stamp_duty - clear_fee
+     sell_profit        = (sell_pct) - sell_broker_cost - sell_svc_tax - sell_stamp_duty - clear_fee
      
      net_profit_pct     = sell_profit - buy_cost
      last_buy_pct       = buy_pct
      buy_pct            += net_profit_pct (may be lost)
-     
+
+4.) 
      
      
     

@@ -20,13 +20,13 @@ def np_shift(arr, num, fill_value=np.nan):
     
     
 def setup_plot(axis       ,\
-               close_data ,\
+               close      ,\
                macd       ,\
                signal     ,\
                hist       ,\
                sma        ,\
-               x          ,\
-               y          ):
+               buy        ,\
+               sell       ):
     '''
         plot all graph and save (modifiable)
     '''
@@ -36,7 +36,7 @@ def setup_plot(axis       ,\
     axis[0].set_title(       'Stock')
     axis[0].set(xlabel     =  'Days')
     axis[0].set(ylabel     = 'Price')
-    axis[0].plot(close_data,    'b-')
+    axis[0].plot(close     ,    'b-')
     axis[0].plot(sma       ,    'g-') #sma
     
     #macd, hist
@@ -49,8 +49,10 @@ def setup_plot(axis       ,\
                 height     =  hist   ,\
                 color      = 'green')
                 
-    #TEST ONLY
-    axis[0].plot(x, y, 'k.')
+    #buy, sell
+    x = np.arange(len(close))
+    axis[0].plot(x[buy] , close[buy] , 'k.')
+    axis[0].plot(x[sell], close[sell], 'r.')
     
     logger.info('setup')
     

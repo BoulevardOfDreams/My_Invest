@@ -22,7 +22,8 @@ class stock_manager():
     def __init__(self):
         self.url_dict = \
         {'econpile' : 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data',\
-         'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'           } 
+         'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'           ,\
+         'eita'     : 'https://www.investing.com/equities/eita-resources-bhd-historical-data'   }
         
         self.log      = log.getLogger('{:<15}'.format('stock_manager'))
         self.log.info('Initialize Stock Library')

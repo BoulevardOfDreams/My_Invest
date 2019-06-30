@@ -13,6 +13,7 @@ from tools.functionality import setup_plot, save
 from tools.logger import init_logger
 from tools.reader import read_file
 from tools.scraper import csv_scraper, stock_manager
+from tools.transact import transact
 
 
 class context():
@@ -46,23 +47,23 @@ def main():
         fig, axis = plt.subplots(2, sharex = True)
         df        = read_file(stock_data)
         name      = stock_data[:4]
-        
-        #macd
-        M         = MACD(df['Price'])
-        result    = M.test_buy_momentum(True)
         close     = df['Price'].to_numpy()[::-1]
-
-        # MACD testing
-        # buy_pts_X = np.arange(len(close))[result]
-        # buy_pts_Y = close[result]
-        # axis[0].plot(buy_pts_X, buy_pts_Y, 'k.')
-        # normal_x  = np.arange(len(close))
         
-        #sma
-        Sma    = SMA(df['Price'], 50)
-        result = Sma.test_buy_abv_sma()
-        y      = close[result]
-        x      = np.arange(len(close))[result]
+
+        M           = MACD(df['Price'])
+        Sma         = SMA(df['Price'], 50)
+        
+        temp_buy    = Sma.test_buy_abv_sma()    &\
+                      M.test_buy_momentum(True)
+                 
+        temp_sell   = Sma.test_sell_below_sma() &\
+                      M.test_sell_negative()
+                    
+        T           = transact(temp_buy, temp_sell)
+        
+        buy         = T.transact_pts==1
+        sell        = T.transact_pts==2
+        
         
         setup_plot(axis    ,\
                    close   ,\
@@ -70,8 +71,8 @@ def main():
                    M.signal,\
                    M.hist  ,\
                    Sma.sma ,\
-                   x       ,\
-                   y       )
+                   buy     ,\
+                   sell    )
                    
         save(name,fig)
                    
