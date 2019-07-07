@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 # Local application imports
 from analysis.macd import MACD
 from analysis.sma import SMA
+from analysis.ema import EMA
 from tools.functionality import setup_plot, save
 from tools.logger import init_logger
 from tools.reader import read_file
@@ -50,18 +51,20 @@ def main():
         close     = df['Price'].to_numpy()[::-1]
         
 
-        M           = MACD(df['Price'])
-        Sma         = SMA(df['Price'], 50)
+        M        = MACD(df['Price'])
+        S30      = SMA(df['Price'], 30)
+        E5       = EMA(df['Price'],  5)
+        E25      = EMA(df['Price'], 25)
         
-        temp_buy    = Sma.test_buy_abv_sma()    &\
-                      M.test_buy_momentum(True)
                  
-        temp_sell   = Sma.test_sell_below_sma() &\
-                      M.test_sell_negative()
+        # temp_sell   = M.tsell_below_thres()  &\
+                      # np.where(Ema.ema < Sma.sma, 1, 0).astype(bool)
                       
-        # temp_buy    = M.test_buy_momentum(True)
-                 
-        # temp_sell   = M.test_sell_negative()
+        temp_buy    = M.tbuy_momentum_up()     &\
+                      np.where(E5.ema > S30.sma, 1, 0).astype(bool)
+                      
+        temp_sell   = np.where(E5.ema < S30.sma, 1, 0).astype(bool)
+
                     
         T           = transact(temp_buy, temp_sell)
         
@@ -74,7 +77,8 @@ def main():
                    M.macd  ,\
                    M.signal,\
                    M.hist  ,\
-                   Sma.sma ,\
+                   S30.sma ,\
+                   E5.ema  ,\
                    buy     ,\
                    sell    )
                    

@@ -91,28 +91,29 @@ class MACD():
                                             self.signalperiod)
         return (self.macd, self.signal, self.hist)    
 
-    def test_buy_momentum(self, strict_mode = False):
+    def tbuy_momentum_up(self, strict_mode = False):
     
-        days     = 2
-        thres    = 0
+        days     = 3
+        thres    = 0.1
+        scale    = 100
         hist_len = len(self.hist)
         result   = np.zeros(hist_len).astype(bool)
             
-        for i in range(1, hist_len):
+        for i in range(2, hist_len):
         
-            hist_diff = self.hist[i]-self.hist[i-1]
-            gradient  = (hist_diff)/days
+            hist_diff = self.hist[i]-self.hist[i-2]
+            gradient  = (hist_diff)/days*scale
             
             if strict_mode:
                 result[i] = gradient > thres and self.hist[i] > 0
             else:
                 result[i] = gradient > thres
                 
-        self.log.info('test momentum buy, strict = {}'.format(strict_mode))
+        self.log.info('tbuy_momentum_up, strict = {}'.format(strict_mode))
         
         return result
     
-    def buy_on_momentum(self, strict_mode = False):
+    def buy_momentum_up(self, strict_mode = False):
             
         hist_today   = self.hist[-1]
         hist_last    = self.hist[-2]
@@ -122,25 +123,57 @@ class MACD():
         if strict_mode:
             result = result and hist_today > 0
         
-        self.log.info('real buy on momentum, strict = {}'.format(strict_mode))
+        self.log.info('buy_momentum_up, strict = {}'.format(strict_mode))
         
         return result
-        
-    def test_buy_positive(self):
-        self.log.info('test buy positive histogram')
-        return np.where(self.hist > 0, 1, 0).astype(bool)
     
-    def buy_positive_hist(self):
-        self.log.info('real buy positive histogram')
-        return self.hist[-1] > 0
+    def tbuy_abv_thres(self, strict_mode = False):
         
-    def test_sell_negative(self):
-        self.log.info('test sell negative histogram')
-        return np.where(self.hist < 0, 1, 0).astype(bool) #NAN comparison warning       
+        thres       = 1
+        scale       = 100
+        hist_today  = self.hist*scale
+        hist_last   = np_shift(self.hist, 1, np.nan)*scale
         
-    def sell_negative_hist(self):
-        self.log.info('real sell negative histogram')
-        return self.hist[-1] < 0
+        self.log.info('tbuy_abv_thres, strict = {}'.format(strict_mode))
+        
+        if strict_mode:
+            return (hist_today > thres) and\
+                   (hist_last  > thres)
+        else:
+            return (hist_today > thres)
+        
+    def buy_abv_thres(self, strict_mode = False):
+        
+        thres       = 1
+        scale       = 100
+        hist_today  = self.hist[-1]*scale
+        hist_last   = self.hist[-2]*scale
+        
+        self.log.info('buy_abv_thres, strict = {}'.format(strict_mode))
+        
+        if strict_mode:
+            return (hist_today > thres) and\
+                   (hist_last  > thres)
+        else:
+            return (hist_today > thres)
+        
+    def tsell_below_thres(self):
+        thres       = 0
+        scale       = 100
+        
+        self.log.info('tsell_below_thres')
+        
+        return (self.hist*scale)<thres
+        
+    def sell_below_thres(self):
+        thres       = 0
+        scale       = 100
+        
+        self.log.info('sell_below_thres')
+        
+        return (self.hist[-1]*scale)<thres
+        
+        
         
 if __name__ == "__main__":
     print(__name__)

@@ -25,6 +25,7 @@ def setup_plot(axis       ,\
                signal     ,\
                hist       ,\
                sma        ,\
+               ema        ,\
                buy        ,\
                sell       ):
     '''
@@ -32,12 +33,13 @@ def setup_plot(axis       ,\
     '''
     logger            = log.getLogger('{:<15}'.format('plot'))
     
-    #sma
+    #sma, ema
     axis[0].set_title(       'Stock')
     axis[0].set(xlabel     =  'Days')
     axis[0].set(ylabel     = 'Price')
     axis[0].plot(close     ,    'b-')
-    axis[0].plot(sma       ,    'g-') #sma
+    axis[0].plot(sma       ,    'r-') 
+    axis[0].plot(ema       ,    'm-')
     
     #macd, hist
     axis[1].set_title('Macd ({0},{1},{2})'.format(12,26,9))

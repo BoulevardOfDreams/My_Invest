@@ -5,7 +5,6 @@ import warnings as warn
 # Third party imports
 import talib
 import numpy as np
-import matplotlib.pyplot as plt
 
 # Local application imports
 from tools.functionality import np_shift
