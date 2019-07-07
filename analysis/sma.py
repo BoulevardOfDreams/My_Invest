@@ -1,5 +1,6 @@
 # Standard library imports
 import logging as log
+import warnings as warn
 
 # Third party imports
 import talib
@@ -15,21 +16,22 @@ class SMA():
         self.close  = df_close.to_numpy()[::-1]
         self.period = period
         
-        self.analysis(df_close)
+        #Catch all warning :(
+        warn.simplefilter("ignore")
         
+        self.analysis(df_close)
         
     def analysis(self, df_close):
         self.log.info('SMA, Period = {0}'.format(self.period))
         
         close                  = df_close.to_numpy()[::-1]
         self.sma               = talib.SMA(close, self.period).astype(np.float32)
-        self.sma[:self.period] = self.close[:self.period]
     
     def test_buy_abv_sma(self, strict_mode = False):
     
         self.log.info('test buy abv sma, strict = {}'.format(strict_mode))
-        
-        abv_sma = np.where(self.close>self.sma, 1, 0).astype(bool)
+
+        abv_sma = np.where(self.close>self.sma, 1, 0).astype(bool) #NAN comparison warning
         
         if strict_mode:
             abv_2_days = np_shift(abv_sma,   \
@@ -53,7 +55,7 @@ class SMA():
     def test_sell_below_sma(self):
         
         self.log.info('test sell below sma')
-        return np.where(self.sma > self.close, 1, 0).astype(bool)
+        return np.where(self.sma > self.close, 1, 0).astype(bool) #NAN comparison warning
         
     def sell_below_sma(self):
     

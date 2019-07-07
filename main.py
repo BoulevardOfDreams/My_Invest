@@ -26,9 +26,9 @@ class context():
 def main():
     init_logger(log_level = log.INFO)
     
-    stock = stock_manager()
-    stock.list_all()
-    scraper = csv_scraper(stock.url_dict)
+    # stock = stock_manager()
+    # stock.list_all()
+    # scraper = csv_scraper(stock.url_dict)
     
     from os import getcwd, listdir, remove
     from os.path import join, isfile
@@ -58,6 +58,10 @@ def main():
                  
         temp_sell   = Sma.test_sell_below_sma() &\
                       M.test_sell_negative()
+                      
+        # temp_buy    = M.test_buy_momentum(True)
+                 
+        # temp_sell   = M.test_sell_negative()
                     
         T           = transact(temp_buy, temp_sell)
         

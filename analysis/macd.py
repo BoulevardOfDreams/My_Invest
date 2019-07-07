@@ -1,5 +1,6 @@
 # Standard library imports
 import logging as log
+import warnings as warn
 
 # Third party imports
 import talib
@@ -61,7 +62,10 @@ class MACD():
         self.fastperiod		= fastperiod
         self.slowperiod		= slowperiod
         self.signalperiod	= signalperiod
-
+        
+        #Catch all warning :(
+        warn.simplefilter('ignore')
+        
         self.macd, self.signal, self.hist = self.analyse(df_close)
         
         
@@ -73,11 +77,11 @@ class MACD():
                    signal = signal        (type: np.ndarray.float64)
 			       hist	  = macd - signal (type: np.ndarray.float64)
         '''
-        self.log.info('MACD	   :Start Analysis               \n\
-                          Parameter:                         \n\
-                          fastperiod   = {self.fastperiod}   \n\
-                          slowperiod   = {self.slowperiod}   \n\
-                          signalperiod = {self.signalperiod} \n'.format(self=self))
+        self.log.info('MACD	   :Start Analysis                    \n\
+                     {fill:<46}Parameter:                         \n\
+                     {fill:<46}fastperiod   = {self.fastperiod}   \n\
+                     {fill:<46}slowperiod   = {self.slowperiod}   \n\
+                     {fill:<46}signalperiod = {self.signalperiod} \n'.format(self=self, fill=''))
         
         close_data		                  = close.to_numpy()
         self.macd, self.signal, self.hist = talib.MACD(
@@ -118,7 +122,7 @@ class MACD():
         if strict_mode:
             result = result and hist_today > 0
         
-        self.log.info('real buy on momentun, strict = {}'.format(strict_mode))
+        self.log.info('real buy on momentum, strict = {}'.format(strict_mode))
         
         return result
         
@@ -132,7 +136,7 @@ class MACD():
         
     def test_sell_negative(self):
         self.log.info('test sell negative histogram')
-        return np.where(self.hist < 0, 1, 0).astype(bool)
+        return np.where(self.hist < 0, 1, 0).astype(bool) #NAN comparison warning       
         
     def sell_negative_hist(self):
         self.log.info('real sell negative histogram')
