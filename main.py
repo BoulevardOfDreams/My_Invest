@@ -45,7 +45,7 @@ def main():
             remove(pdf)
     
     for stock_data in csv_list:
-        fig, axis = plt.subplots(2, sharex = True)
+        fig, axis = plt.subplots(3, sharex = True)
         df        = read_file(stock_data)
         name      = stock_data[:4]
         close     = df['Price'].to_numpy()[::-1]
@@ -66,10 +66,14 @@ def main():
         temp_sell   = np.where(E5.ema < S30.sma, 1, 0).astype(bool)
 
                     
-        T           = transact(temp_buy, temp_sell)
+        T           = transact(temp_buy, temp_sell, df['Price'])
         
         buy         = T.transact_pts==1
         sell        = T.transact_pts==2
+        
+        fund        = T.calc_NetProfit()
+        s_index     = np.zeros(len(fund)).astype(int)
+        s_index[1:] = np.where(sell)[0]
         
         
         setup_plot(axis    ,\
@@ -80,7 +84,9 @@ def main():
                    S30.sma ,\
                    E5.ema  ,\
                    buy     ,\
-                   sell    )
+                   sell    ,\
+                   s_index ,\
+                   fund     )
                    
         save(name,fig)
                    

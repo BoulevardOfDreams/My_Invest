@@ -27,7 +27,9 @@ def setup_plot(axis       ,\
                sma        ,\
                ema        ,\
                buy        ,\
-               sell       ):
+               sell       ,\
+               s_index    ,\
+               fund       ):
     '''
         plot all graph and save (modifiable)
     '''
@@ -55,6 +57,23 @@ def setup_plot(axis       ,\
     x = np.arange(len(close))
     axis[0].plot(x[buy] , close[buy] , 'k.')
     axis[0].plot(x[sell], close[sell], 'r.')
+                
+    #fund percent hist
+    axis[2].bar(range(s_index[0], s_index[1]),\
+                height     =          fund[0],\
+                color      =           'green')
+                        
+    for i in range(1,len(s_index)-1):
+        if fund[i]>fund[i-1]:
+        
+            axis[2].bar(range(s_index[i], s_index[i+1]),\
+                        height     =            fund[i],\
+                        color      =             'green')
+        else:
+        
+            axis[2].bar(range(s_index[i], s_index[i+1]),\
+                        height     =            fund[i],\
+                        color      =               'red')
     
     logger.info('setup')
     
