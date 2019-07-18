@@ -58,22 +58,15 @@ def setup_plot(axis       ,\
     axis[0].plot(x[buy] , close[buy] , 'k.')
     axis[0].plot(x[sell], close[sell], 'r.')
                 
-    #fund percent hist
-    axis[2].bar(range(s_index[0], s_index[1]),\
-                height     =          fund[0],\
-                color      =           'green')
                         
-    for i in range(1,len(s_index)-1):
+    for i in range(1, len(fund)):
         if fund[i]>fund[i-1]:
-        
-            axis[2].bar(range(s_index[i], s_index[i+1]),\
-                        height     =            fund[i],\
-                        color      =             'green')
+            axis[2].plot(s_index[i], fund[i], 'g.')
+            
         else:
-        
-            axis[2].bar(range(s_index[i], s_index[i+1]),\
-                        height     =            fund[i],\
-                        color      =               'red')
+            axis[2].plot(s_index[i], fund[i], 'r.')
+            
+        axis[2].annotate(str(int(fund[i])), xy=(s_index[i], fund[i]))
     
     logger.info('setup')
     

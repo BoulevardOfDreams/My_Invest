@@ -78,11 +78,11 @@ class transact():
             ls_result.append(fund_perct)
         
         #initial fund percent = 1
-        ls_result.insert(0, fund_perct)
+        ls_result.insert(0, 1)
         
         #convert to percent
         ls_result = [r*100 for r in ls_result]
-        
+        self.log.info('result {}'.format(ls_result))
         self.log.info('calculate earning/loss percent')
         return ls_result
         
