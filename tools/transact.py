@@ -69,6 +69,8 @@ class transact():
         ls_result      = []
         fund_perct     = 1
         
+        print(buy)
+        print(sell)
         
         #profit include interest
         pii_percent = ((sell-buy)/buy) - 0.011
@@ -82,7 +84,7 @@ class transact():
         
         #convert to percent
         ls_result = [r*100 for r in ls_result]
-        self.log.info('result {}'.format(ls_result))
+        
         self.log.info('calculate earning/loss percent')
         return ls_result
         

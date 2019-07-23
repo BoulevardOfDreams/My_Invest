@@ -127,9 +127,13 @@ class MACD():
         
         return result
     
-    def tbuy_abv_thres(self, strict_mode = False):
+    def tbuy_abv_thres(self, thres, strict_mode = False):
+        '''
+            test buy when hist > threshold
+            parameter: thres  = hist value scale 100 (type: int)         
+            return   : buy    = buy signal           (type: np.ndarray.bool)							  
+        '''
         
-        thres       = 1
         scale       = 100
         hist_today  = self.hist*scale
         hist_last   = np_shift(self.hist, 1, np.nan)*scale
@@ -157,8 +161,12 @@ class MACD():
         else:
             return (hist_today > thres)
         
-    def tsell_below_thres(self):
-        thres       = 0
+    def tsell_below_thres(self, thres):
+        '''
+            test sell when hist < threshold
+            parameter: thres  = hist value scale 100 (type: int)         
+            return   : sell   = sell signal           type: np.ndarray.bool)							  
+        '''
         scale       = 100
         
         self.log.info('tsell_below_thres')
