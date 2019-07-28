@@ -10,38 +10,6 @@ import matplotlib.pyplot as plt
 # Local application imports
 from tools.functionality import np_shift
 
-        
-def RSI__IsOverbought(rsi_value, upper_limit):
-    '''
-    parameter: rsi_value = value from talib.RSI
-    return	 : range of days where overbought happens. (True = 'Overbought')
-    '''
-    dummy_val = 50
-    return np_shift((rsi_value>=upper_limit),1,0)& \
-          (np_shift(rsi_value,1,dummy_val)>rsi_value)
-		  
-def RSI__IsOversold(rsi_value, lower_limit):
-    '''
-    parameter: rsi_value = value from talib.RSI
-    return	 : range of days where oversold happens. (True = 'Oversold')
-    '''
-    dummy_val = 50
-    return np_shift((rsi_value<=lower_limit),1,0)& \
-           (np_shift(rsi_value,1,dummy_val)<rsi_value)
-
-def RSI_analysis(close_data, timeperiod, upper_limit = 70, lower_limit = 30):
-    '''
-    parameter: close_data = closing price array (type: np.ndarray.float64)
-    return	 : rsi_buy_signal  = range of days to 'Buy'. True = 'Buy'
-               rsi_sell_signal = range of days to 'Sell'. True ='Sell'	
-    '''
-    dummy_value 	= 50
-    rsi_value		= talib.RSI(close_data, timeperiod).astype(np.float32)
-    rsi_value 		= rsi_value[~np.isnan(rsi_value)] #only select non-nan RSI value			  
-    rsi_buy_signal  = RSI__IsOversold(rsi_value, lower_limit)
-    rsi_sell_signal	= RSI__IsOverbought(rsi_value,upper_limit)
-    return (rsi_value,rsi_buy_signal,rsi_sell_signal)
-
 class MACD():
 
     '''

@@ -21,9 +21,14 @@ from environment.env_setting import ENVIRONMENT, Host
 class stock_manager():
     def __init__(self):
         self.url_dict = \
-        {'econpile' : 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data',\
-         'gamuda  ' : 'https://www.investing.com/equities/gamuda-bhd-historical-data'           ,\
-         'eita'     : 'https://www.investing.com/equities/eita-resources-bhd-historical-data'   }
+        {'econpile' : 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data' ,\
+         'gamuda'   : 'https://www.investing.com/equities/gamuda-bhd-historical-data'            ,\
+         'pie'      : 'https://www.investing.com/equities/pie-industrial-bhd-historical-data'    ,\
+         'inari'    : 'https://www.investing.com/equities/inari-amertron-bhd-historical-data'    ,\
+         'maybank'  : 'https://www.investing.com/equities/malayan-banking-bhd-historical-data'   ,\
+         'hi-p'     : 'https://www.investing.com/equities/hi-p-international-ltd-historical-data',\
+         'sunning'  : 'https://www.investing.com/equities/sunningdale-tech-ltd-historical-data'  ,\
+         'ST'       : 'https://www.investing.com/equities/singapore-technologies-engineering-historical-data'}
         
         self.log      = log.getLogger('{:<15}'.format('stock_manager'))
         self.log.info('Initialize Stock Library')

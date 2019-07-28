@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from analysis.macd import MACD
 from analysis.sma import SMA
 from analysis.ema import EMA
+from analysis.rsi import RSI
 from tools.functionality import setup_plot, save, np_shift
 from tools.logger import init_logger
 from tools.reader import read_file
@@ -45,32 +46,33 @@ def main():
             remove(pdf)
     
     for stock_data in csv_list:
-        fig, axis = plt.subplots(3, sharex = True)
+        fig, axis = plt.subplots(4, sharex = True)
         df        = read_file(stock_data)
         name      = stock_data[:4]
         close     = df['Price'].to_numpy()[::-1]
         
 
         M        = MACD(df['Price'])
+        R        = RSI(df['Price'], 14)
+        S200     = SMA(df['Price'],200)
         S50      = SMA(df['Price'], 50)
-        E30      = EMA(df['Price'], 30)
-        E25      = EMA(df['Price'], 25)
+        S30      = SMA(df['Price'], 30)
+        S15      = SMA(df['Price'], 15)
         
                  
-        temp          = np_shift(S50.sma, 1, 100)
-        diff_50       = S50.sma - temp
-        result_50     = np.ones(len(close)).astype(bool)
+        # temp          = np_shift(S50.sma, 1, 100)
+        # diff_50       = S50.sma - temp
+        # result_50     = np.ones(len(close)).astype(bool)
 
-        for i in range(1):
-            now       = np_shift(diff_50, i  , 100)
-            later     = np_shift(diff_50, i+1, 100)
-            result_50 &= ((now > later) & (now > 0))
+        # for i in range(1):
+            # now       = np_shift(diff_50, i  , 100)
+            # later     = np_shift(diff_50, i+1, 100)
+            # result_50 &= ((now > later) & (now > 0))
         
-        temp2         = np_shift(E30.ema, 1, 100)
-        d_30_trend    = np.where(E30.ema < temp2, 1, 0).astype(bool)
-        
-        temp_buy      =  result_50 & (close < S50.sma)
-        temp_sell     = (M.macd < 0) & d_30_trend
+        temp_buy      = (S15.sma > S50.sma)  &\
+                        M.tbuy_momentum_up() &\
+                        np.invert(R.isOverbought(65))
+        temp_sell     = (S15.sma < S50.sma) 
                     
         T           = transact(temp_buy, temp_sell, df['Price'])
         
@@ -88,11 +90,12 @@ def main():
                    M.signal,\
                    M.hist  ,\
                    S50.sma ,\
-                   E30.ema  ,\
+                   S15.sma ,\
                    buy     ,\
                    sell    ,\
                    s_index ,\
-                   fund     )
+                   fund    ,\
+                   R.rsi   )
                    
         save(name,fig)
                    

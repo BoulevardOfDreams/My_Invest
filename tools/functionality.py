@@ -29,7 +29,8 @@ def setup_plot(axis       ,\
                buy        ,\
                sell       ,\
                s_index    ,\
-               fund       ):
+               fund       ,\
+               rsi        ):
     '''
         plot all graph and save (modifiable)
     '''
@@ -58,7 +59,11 @@ def setup_plot(axis       ,\
     axis[0].plot(x[buy] , close[buy] , 'k.')
     axis[0].plot(x[sell], close[sell], 'r.')
                 
-                        
+    #earning plot
+    axis[2].set_title(       'Earnings')
+    axis[2].set(xlabel     = 'Days'    )
+    axis[2].set(ylabel     = 'Percent' )
+    
     for i in range(1, len(fund)):
         if fund[i]>fund[i-1]:
             axis[2].plot(s_index[i], fund[i], 'g.')
@@ -69,6 +74,17 @@ def setup_plot(axis       ,\
         axis[2].annotate(str(int(fund[i])), xy=(s_index[i], fund[i]))
     
     logger.info('setup')
+    
+    #rsi
+    upper_limit = np.ones(len(hist))*70
+    lower_limit = np.ones(len(hist))*30
+    axis[3].set_title(      'RSI' )
+    axis[3].set(xlabel    = 'Days')
+    axis[3].set(ylabel    = 'val' )
+    axis[3].plot(upper_limit , 'r')
+    axis[3].plot(lower_limit , 'r')
+    axis[3].plot(rsi         , 'g')   
+    
     
 def save(name, fig, format = '.pdf'):
 
