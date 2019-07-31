@@ -109,7 +109,7 @@ class MACD():
         self.log.info('tbuy_abv_thres, strict = {}'.format(strict_mode))
         
         if strict_mode:
-            return (hist_today > thres) and\
+            return (hist_today > thres) &\
                    (hist_last  > thres)
         else:
             return (hist_today > thres)

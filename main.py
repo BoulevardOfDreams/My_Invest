@@ -69,10 +69,10 @@ def main():
             # later     = np_shift(diff_50, i+1, 100)
             # result_50 &= ((now > later) & (now > 0))
         
-        temp_buy      = (S15.sma > S50.sma)  &\
-                        M.tbuy_momentum_up() &\
-                        np.invert(R.isOverbought(65))
-        temp_sell     = (S15.sma < S50.sma) 
+        temp_buy      = (S30.sma > S50.sma)           &\
+                        np.invert(R.isOverbought(60)) &\
+                        M.tbuy_momentum_up() 
+        temp_sell     = (S30.sma < S50.sma) 
                     
         T           = transact(temp_buy, temp_sell, df['Price'])
         

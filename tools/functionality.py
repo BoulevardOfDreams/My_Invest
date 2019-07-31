@@ -76,7 +76,7 @@ def setup_plot(axis       ,\
     logger.info('setup')
     
     #rsi
-    upper_limit = np.ones(len(hist))*70
+    upper_limit = np.ones(len(hist))*65
     lower_limit = np.ones(len(hist))*30
     axis[3].set_title(      'RSI' )
     axis[3].set(xlabel    = 'Days')
