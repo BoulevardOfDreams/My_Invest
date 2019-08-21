@@ -28,6 +28,7 @@ class stock_manager():
          'maybank'  : 'https://www.investing.com/equities/malayan-banking-bhd-historical-data'   ,\
          'hi-p'     : 'https://www.investing.com/equities/hi-p-international-ltd-historical-data',\
          'sunning'  : 'https://www.investing.com/equities/sunningdale-tech-ltd-historical-data'  ,\
+         'genM'     : 'https://www.investing.com/equities/genting-malaysia-bhd-historical-data'  ,\
          'ST'       : 'https://www.investing.com/equities/singapore-technologies-engineering-historical-data'}
         
         self.log      = log.getLogger('{:<15}'.format('stock_manager'))
