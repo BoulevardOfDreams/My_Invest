@@ -9,7 +9,9 @@ pip install --upgrade numpy --proxy "http://uia64930:pass@cias3basic.conti.de:80
 
 4.)How to install virtualenv without setting crazy environment path!
 virtualenv --no-download -p "C:\Program Files (x86)\Python3.6\python.exe" C:\Users\UIA64930\Desktop\My_Invest1
+virtualenv --no-download -p "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python36_64\python.exe" C:\Users\W8\Desktop\my_invest\backtester
 
+virtualenv --no-download -p "C:\Program Files (x86)\Python3.6\python.exe" 
 1.)Proxy With Git (Global Configuration)
 git config --global http.proxy "http://@cias3basic.conti.de:8080"
 

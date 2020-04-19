@@ -33,3 +33,6 @@ https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.
 9.)Create .py file in cmd
 TYPE CON>test.py
 ctrl + z to terminate
+
+10.)Setup SSH
+https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh

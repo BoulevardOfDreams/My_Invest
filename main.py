@@ -28,9 +28,9 @@ class context():
 def main():
     init_logger(log_level = log.INFO)
     
-    # stock = stock_manager()
-    # stock.list_all()
-    # scraper = csv_scraper(stock.url_dict)
+    stock = stock_manager()
+    stock.list_all()
+    scraper = csv_scraper(stock.url_dict)
     
     from os import getcwd, listdir, remove
     from os.path import join, isfile
