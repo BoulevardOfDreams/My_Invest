@@ -38,6 +38,7 @@ class transact():
         if is_overlap:
             self.log.warning('buy sell points overlapping')
         
+        #
         for i in range(1,len(buy)):
             
             if previous == sell_signal:
@@ -87,7 +88,3 @@ class transact():
         
         self.log.info('calculate earning/loss percent')
         return ls_result
-        
-    
-        
-        
