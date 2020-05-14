@@ -8,15 +8,16 @@ import numpy as np
 # Local application imports
 
 class EMA():
-    def __init__(self, df_close, period = 10):
+    def __init__(self, close, period = 10):
         self.period = period
+        self.close = close
         self.log    = log.getLogger('{:<15}'.format('ema'))
-        self.analysis(df_close, period)
+        self.__analysis()
         
-    def analysis(self, df_close, period):
-        close      = df_close.to_numpy()[::-1]
-        self.ema   = talib.EMA(close, self.period).astype(np.float32)
-        
+    def __analysis(self):
         self.log.info('EMA, Period = {0}'.format(self.period))
+        
+        self.ema   = talib.EMA(self.close, self.period).astype(np.float32)
+        
         
         

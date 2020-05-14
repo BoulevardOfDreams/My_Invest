@@ -36,3 +36,6 @@ ctrl + z to terminate
 
 10.)Setup SSH
 https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh
+
+11.)Underscore(_) in python
+https://www.geeksforgeeks.org/underscore-_-python/
