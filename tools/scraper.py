@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.common.exceptions import ElementClickInterceptedException
 
 # Local application imports
 from environment.env_setting import ENVIRONMENT, Host
@@ -21,15 +21,15 @@ from environment.env_setting import ENVIRONMENT, Host
 class stock_manager():
     def __init__(self):
         self.url_dict = \
-        {'econpile' : 'https://www.investing.com/equities/econpile-holdings-bhd-historical-data' ,\
-         'gamuda'   : 'https://www.investing.com/equities/gamuda-bhd-historical-data'            ,\
-         'pie'      : 'https://www.investing.com/equities/pie-industrial-bhd-historical-data'    ,\
-         'inari'    : 'https://www.investing.com/equities/inari-amertron-bhd-historical-data'    ,\
-         'maybank'  : 'https://www.investing.com/equities/malayan-banking-bhd-historical-data'   ,\
-         'hi-p'     : 'https://www.investing.com/equities/hi-p-international-ltd-historical-data',\
-         'sunning'  : 'https://www.investing.com/equities/sunningdale-tech-ltd-historical-data'  ,\
-         'genM'     : 'https://www.investing.com/equities/genting-malaysia-bhd-historical-data'  ,\
-         'ST'       : 'https://www.investing.com/equities/singapore-technologies-engineering-historical-data'}
+        {
+         'hi-p'     : 'https://www.investing.com/equities/hi-p-international-ltd-historical-data'             ,\
+         'sunning'  : 'https://www.investing.com/equities/sunningdale-tech-ltd-historical-data'               ,\
+         'ST'       : 'https://www.investing.com/equities/singapore-technologies-engineering-historical-data' ,\
+         'yzj'      : 'https://www.investing.com/equities/yangzijiang-ship-historical-data'                   ,\
+         'GenS'     : 'https://www.investing.com/equities/genting-international-historical-data'              ,\
+         'Bynd'     : 'https://www.investing.com/equities/beyond-meat-inc-historical-data'                    ,\
+         'Tesla'    : 'https://www.investing.com/equities/tesla-motors-historical-data'
+        }
         
         self.log      = log.getLogger('{:<15}'.format('stock_manager'))
         self.log.info('Initialize Stock Library')
@@ -129,7 +129,11 @@ class csv_scraper():
         
         for url in self.url_dict.values():
             self.browser.get(url)
-            self.browser.find_element_by_id("widgetFieldDateRange").click()
+            try:
+                self.browser.find_element_by_id("widgetFieldDateRange").click()
+            except ElementClickInterceptedException:
+                self.browser.find_element_by_css_selector(".js-promotion-popup-close").click()
+                self.browser.find_element_by_id("widgetFieldDateRange").click()
             
             self.browser.find_element_by_id("startDate").clear()
             self.browser.find_element_by_id("startDate").send_keys(x3_year_ago)

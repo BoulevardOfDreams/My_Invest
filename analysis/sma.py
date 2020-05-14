@@ -10,21 +10,20 @@ import numpy as np
 from tools.functionality import np_shift
 
 class SMA():
-    def __init__(self, df_close, period = 50):
+    def __init__(self, close, period = 50):
         self.log    = log.getLogger('{:<15}'.format('sma'))
-        self.close  = df_close.to_numpy()[::-1]
+        self.close  = close
         self.period = period
         
         #Catch all warning :(
         warn.simplefilter("ignore")
         
-        self.analysis(df_close)
+        self.__analysis()
         
-    def analysis(self, df_close):
+    def __analysis(self):
         self.log.info('SMA, Period = {0}'.format(self.period))
         
-        close                  = df_close.to_numpy()[::-1]
-        self.sma               = talib.SMA(close, self.period).astype(np.float32)
+        self.sma  = talib.SMA(self.close, self.period).astype(np.float32)
     
     def test_buy_abv_sma(self, strict_mode = False):
     
