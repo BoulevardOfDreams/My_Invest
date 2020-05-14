@@ -21,7 +21,7 @@ class transact():
         
     def __process(self, buy, sell):
         '''
-            determine buy and sell points
+            determine buy and sell points (double underscore name mangling private)
             parameter:  buy    = buy points  (type: np.ndarray.bool) 
                         sell   = sell points (type: np.ndarray.bool)
             return   :  result = transact pts(type: np.ndarray.int)
@@ -63,7 +63,7 @@ class transact():
     def calc_NetProfit(self):
         '''
             Calculate fund percent after sell
-            return   :  ls_result = fund percent after sell (type: np.ndarray.float32)
+            return   :  ls_result = fund percent after sell
         '''
         sell           = self.close[self.transact_pts == 2]
         buy            = self.close[self.transact_pts == 1][:len(sell)]
@@ -80,11 +80,23 @@ class transact():
             fund_perct += fund_perct*pii
             ls_result.append(fund_perct)
         
-        #initial fund percent = 1
-        ls_result.insert(0, 1)
-        
         #convert to percent
         ls_result = [r*100 for r in ls_result]
         
         self.log.info('calculate earning/loss percent')
         return ls_result
+    
+    def get_BuySellIndex(self):
+        '''
+            Get buying and selling index (Position when stock bought or sold)
+            return   :  buy_index  = index of buying points
+                        sell_index = index of selling points
+        '''
+        sell_pts    = (self.transact_pts == 2)
+        sell_index  = np.where(sell_pts)[0]
+        
+        buy_pts     = (self.transact_pts == 1)
+        buy_index   = np.where(buy_pts)[0][:len(sell_index)] #number of buy sell pts is same
+
+        return (buy_index, sell_index)
+

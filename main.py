@@ -11,7 +11,8 @@ from analysis.macd import MACD
 from analysis.sma import SMA
 from analysis.ema import EMA
 from analysis.rsi import RSI
-from tools.functionality import save, np_shift, plot_MA, plot_fund, plot_transact
+from analysis.regression import linear_regression
+from tools.functionality import save, np_shift, get_price_indexOf, plot_MA, plot_fund, plot_transact, plot_LGR, plot_price_index
 from tools.logger import init_logger
 from tools.reader import read_file
 from tools.scraper import csv_scraper, stock_manager
@@ -49,32 +50,32 @@ def main():
                     if isfile(join(database_dir, csv))]
     
     for stock_data in csv_list:
-        fig, axis = plt.subplots(2, sharex = True)
-        df        = read_file(stock_data)
-        name      = stock_data[:4]
-        close     = df['Price'].to_numpy()[::-1]
+        fig, axis   = plt.subplots(3, sharex = True)
+        df          = read_file(stock_data)
+        name        = stock_data[:4]
         
+        #y-data (price, price index)
+        close       = df['Price'].to_numpy()[::-1] #inverse numpy array
+        price_index = get_price_indexOf(close)
+        
+        #analysis
         M        = MACD(df['Price'])
         R        = RSI(df['Price'], 14)
-        S200     = SMA(df['Price'],200)
-        S50      = SMA(df['Price'], 50)
-        S30      = SMA(df['Price'], 30)
-        S15      = SMA(df['Price'], 15)
-        
-        temp_buy      = (S30.sma > S50.sma)
-        temp_sell     = (S30.sma < S50.sma) 
-                    
+        S200     = SMA(close,      200)
+        S50      = SMA(close,       50)
+        E5       = EMA(close,        5)
+        S15      = SMA(close,       15)
+        LGR      = linear_regression(price_index, 30)
+
+        temp_buy      = (E5.ema > S15.sma) & (LGR.m > 0)
+        temp_sell     = (E5.ema < S15.sma)
+
+        #Transaction
         T           = transact(temp_buy, temp_sell, df['Price'])
-        
-        buy         = T.transact_pts==1
-        sell        = T.transact_pts==2
-
         fund        = T.calc_NetProfit()
-        s_index     = np.zeros(len(fund)).astype(int)
 
-        #Get index of selling points
-        s_index[1:] = np.where(sell)[0] 
-        
+        b_index, s_index = T.get_BuySellIndex()
+
         #plot
         sub0 = 0
         sub1 = 1
@@ -83,15 +84,26 @@ def main():
         plot_MA(axis      ,\
                 sub0      ,\
                 close     ,\
-                S30.sma   ,\
-                S50.sma   )
+                E5.ema    ,\
+                S15.sma   )
         
-        plot_transact(axis  ,\
-                      sub0  ,\
-                      close ,\
-                      buy   ,\
-                      sell  )
+        plot_transact(axis    ,\
+                      sub0    ,\
+                      close   ,\
+                      b_index ,\
+                      s_index )
 
+        plot_price_index(axis        ,\
+                         sub2        ,\
+                         price_index )
+
+        plot_LGR(axis           ,\
+                 sub2           ,\
+                 b_index        ,\
+                 LGR.m[b_index] ,\
+                 LGR.c[b_index] ,\
+                 30      )
+        
         plot_fund(axis      ,\
                   sub1      ,\
                   s_index   ,\
@@ -110,9 +122,7 @@ def main():
                    # fund    ,\
                    # R.rsi   )
                    
-        save(name,fig)
-                   
-        
+        save(name,fig) 
     
 if __name__ == "__main__":
     main()

@@ -20,10 +20,22 @@ def np_shift(arr, num, fill_value=np.nan):
         result = arr
     return result
     
+def get_price_indexOf(price):
+    '''
+        price index  = today_price/ytd_price * today_price_index
+        return price_index = price index      (type: np.ndarray.uint16)
+    '''
+    price_index = np.zeros(len(price), dtype = np.float64)
+    price_index[0] = 1000 
+    
+    for today in range(1, len(price)):
+        ytd = today -1
+        price_index[today] = price[today]/price[ytd]*price_index[ytd]
 
+    return price_index.astype(np.uint16)
 
 def plot_MA(axis       ,\
-            index      ,\
+            plt_no     ,\
             close      ,\
             *movingavg ):
     '''
@@ -36,22 +48,22 @@ def plot_MA(axis       ,\
     logger = log.getLogger('{:<15}'.format('plot moving averages'))
     colors = ('c-','r-','m-')    
 
-    axis[index].set_title(   'Stock')
-    axis[index].set(xlabel =  'Days')
-    axis[index].set(ylabel = 'Price')
-    axis[index].plot(close ,    'b-')
+    axis[plt_no].set_title(   'Stock')
+    axis[plt_no].set(xlabel =  'Days')
+    axis[plt_no].set(ylabel = 'Price')
+    axis[plt_no].plot(close ,    'b-')
 
     #plot moving averages
     for MA, color in zip(movingavg, colors):    
-        axis[index].plot(MA , color) 
+        axis[plt_no].plot(MA , color) 
     
 
 
-def plot_transact(axis  ,\
-                  index ,\
-                  close ,\
-                  buy   ,\
-                  sell  ):
+def plot_transact(axis   ,\
+                  plt_no ,\
+                  close  ,\
+                  buy    ,\
+                  sell   ):
     '''
         plot buying and selling pts on MA graph
     '''
@@ -59,36 +71,64 @@ def plot_transact(axis  ,\
     logger = log.getLogger('{:<15}'.format('plot transact points on MA graph'))
     
     #plot buy, sell pts
-    x = np.arange(len(close))
-    axis[index].plot(x[buy] , close[buy] , 'k.')
-    axis[index].plot(x[sell], close[sell], 'r.')
+    axis[plt_no].plot(buy  , close[buy] , 'k.')
+    axis[plt_no].plot(sell , close[sell], 'r.')
 
 
 def plot_fund(axis    ,\
-              index   ,\
+              plt_no   ,\
               sell_pt ,\
               fund    ):
-    
     '''
         plot fund percentage according to sell point
     '''
-    
-    logger = log.getLogger('{:<15}'.format('plot fund percentage'))
-    
-    axis[index].set_title(   'Earnings')
-    axis[index].set(xlabel = 'Days'    )
-    axis[index].set(ylabel = 'Percent' )
+    logger  = log.getLogger('{:<15}'.format('plot fund percentage'))
+
+    #fund start with 100%
+    fund    = np.concatenate(([100], fund))
+    sell_pt = np.concatenate(([0]  , sell_pt))
+        
+    axis[plt_no].set_title(   'Earnings')
+    axis[plt_no].set(xlabel = 'Days'    )
+    axis[plt_no].set(ylabel = 'Percent' )
 
     for i in range(1, len(fund)):
         if fund[i]>fund[i-1]:
-            axis[index].plot(sell_pt[i], fund[i], 'g.')
+            axis[plt_no].plot(sell_pt[i], fund[i], 'g.')
             
         else:
-            axis[index].plot(sell_pt[i], fund[i], 'r.')
+            axis[plt_no].plot(sell_pt[i], fund[i], 'r.')
             
-        axis[index].annotate(str(int(fund[i])), xy=(sell_pt[i], fund[i]))
+        axis[plt_no].annotate(str(int(fund[i])), xy=(sell_pt[i], fund[i]))
     
+def plot_LGR(axis    ,\
+             plt_no  ,\
+             buy_pts ,\
+             m       ,\
+             c       ,\
+             period  ):
+    '''
+        plot linear regression line
+    '''
+    for index in range(0, len(buy_pts)):
+        start = buy_pts[index] - period + 1 #array index start with 0, so add 1
+        end   = buy_pts[index]
+        buy_x = np.arange(start, end)
+        price = m[index]*buy_x + c[index]
 
+        axis[plt_no].plot(buy_x, price, 'k-')
+    
+def plot_price_index(axis        ,\
+                     plt_no      ,\
+                     price_index ):
+    '''
+        plot stock price index
+    '''
+    axis[plt_no].set_title('Price Index')
+    axis[plt_no].set(xlabel = 'Days'    )
+    axis[plt_no].set(ylabel = 'Index' )
+    axis[plt_no].plot(price_index, 'r-')
+    
 def setup_plot(axis       ,\
                close      ,\
                macd       ,\
