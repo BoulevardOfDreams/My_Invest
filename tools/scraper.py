@@ -103,8 +103,8 @@ class csv_scraper():
     def login(self):
      
         url            = "https://www.investing.com/"
-        email	   	   = "emailautomation95@gmail.com"
-        password	   = "Outmyhouse95"
+        email	   	   = "USER EMAIL ADDRESS"
+        password	   = "USER PW"
         webSignIn      = "//a[@class='login bold']"
         popUpSignIn    = "//a[starts-with(@onclick, 'login')]"
 
