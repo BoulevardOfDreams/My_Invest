@@ -5,7 +5,7 @@
 
 This is an automated trading software created for me to test out my technical analysis strategy according to 3 years closing price. <br>
 
-Functionality:
+Functionality: <br>
 1.) Insert URL (Investing.com) of corresponding stocks (eg ComfordDelgro, KeppelDC) in python file.                 <br>
 2.) Python automation will open firefox browser, login to my account and scrap the closing price of stocks entered  <br>
 3.) It will compute buying and selling decision according to rules entered( based on MACD, SMA, EMA, RSI)           <br>
