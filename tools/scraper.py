@@ -80,7 +80,7 @@ class csv_scraper():
         
         if ENVIRONMENT == Host.COMPANY:
             username       = 'uia64930'
-            password       = 'Outmyhouse95:D'  
+            password       = 'PW'  
             company_http   = 'cias3basic.conti.de' #Conti proxy
             company_port   = '8080'
             proxy_http     = 'network.proxy.http'    
